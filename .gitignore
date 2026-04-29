@@ -1,3 +1,6 @@
+roms/
+.vscode/
+
 # Prerequisites
 *.d
 

@@ -10,8 +10,8 @@ Chip8::Chip8()
     opTable["00e0"] = &Chip8::OP_clearDisplay;
     opTable["00ee"] = &Chip8::OP_return;
     opTable["0xxx"] = &Chip8::OP_0xxx;
-    opTable["1xxx"] = &Chip8::OP_1xxx;
-    opTable["2xxx"] = &Chip8::OP_2xxx;
+    opTable["1xxx"] = &Chip8::OP_JumpAddr;
+    opTable["2xxx"] = &Chip8::OP_callAddr;
     opTable["3xxx"] = &Chip8::OP_3xxx;
     opTable["4xxx"] = &Chip8::OP_4xxx;
     opTable["5xx0"] = &Chip8::OP_5xx0;

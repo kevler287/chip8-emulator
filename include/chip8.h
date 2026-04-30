@@ -24,8 +24,8 @@ private:
     void OP_clearDisplay();
     void OP_return();
     void OP_0xxx();
-    void OP_1xxx();
-    void OP_2xxx();
+    void OP_JumpAddr();
+    void OP_callAddr();
     void OP_3xxx();
     void OP_4xxx();
     void OP_5xx0();

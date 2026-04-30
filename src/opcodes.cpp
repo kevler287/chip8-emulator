@@ -3,7 +3,8 @@
 
 void Chip8::OP_clearDisplay()
 {
-    for (uint32_t &pixel : display){
+    for (uint32_t &pixel : display)
+    {
         pixel = 0;
     }
     std::cout << display[0];
@@ -11,7 +12,8 @@ void Chip8::OP_clearDisplay()
 
 void Chip8::OP_return()
 {
-    std::cout << "00ee";
+    programCounter = stack[stackPointer];
+    stackPointer--;
 }
 
 void Chip8::OP_0xxx()
@@ -19,43 +21,51 @@ void Chip8::OP_0xxx()
     std::cout << "0xxx";
 }
 
-void Chip8::OP_1xxx()
+void Chip8::OP_JumpAddr()
 {
-    std::cout << "1xxx";
+    programCounter = opcode & 0x0FFF;
 }
 
-void Chip8::OP_2xxx()
+void Chip8::OP_callAddr()
 {
-    std::cout << "2xxx";
+    stackPointer++;
+    stack[stackPointer] = programCounter;
+    programCounter = opcode & 0x0FFF;
 }
 
 void Chip8::OP_3xxx()
 {
-    std::cout << "3xxx";
+    if (registers[opcode & 0x0F00] == opcode & 0x00FF){
+        programCounter += 2;
+    }
 }
 void Chip8::OP_4xxx()
 {
-    std::cout << "4xxx";
+    if (registers[opcode & 0x0F00] != opcode & 0x00FF){
+        programCounter += 2;
+    }
 }
 void Chip8::OP_5xx0()
 {
-    std::cout << "5xx0";
+    if (registers[opcode & 0x0F00] == registers[opcode & 0x00F0]){
+        programCounter += 2;
+    }
 }
 void Chip8::OP_6xxx()
 {
-    std::cout << "6xxx";
+    registers[opcode & 0x0F00] = opcode & 0x00FF;
 }
 void Chip8::OP_7xxx()
 {
-    std::cout << "7xxx";
+    registers[opcode & 0x0F00] += opcode & 0x00FF;
 }
 void Chip8::OP_8xx0()
 {
-    std::cout << "8xx0";
+    registers[opcode & 0x0F00] = registers[opcode & 0x00F0];
 }
 void Chip8::OP_8xx1()
 {
-    std::cout << "8xx1";
+    registers[opcode & 0x0F00] |= registers[opcode & 0x00F0];
 }
 void Chip8::OP_8xx2()
 {

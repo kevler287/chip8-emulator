@@ -3,11 +3,9 @@
 
 void Chip8::OP_clearDisplay()
 {
-    for (uint32_t &pixel : display)
-    {
-        pixel = 0;
+    for (int i = 0 ; i < std::size(display) ; i++){
+        display[i] = 0;
     }
-    std::cout << display[0];
 }
 
 void Chip8::OP_return()
@@ -33,87 +31,110 @@ void Chip8::OP_callAddr()
     programCounter = opcode & 0x0FFF;
 }
 
-void Chip8::OP_3xxx()
+void Chip8::OP_skipIf()
 {
-    if (registers[opcode & 0x0F00] == opcode & 0x00FF){
+    if (registers[(opcode & 0x0F00) >> 8] == (opcode & 0x00FF)){
         programCounter += 2;
     }
 }
-void Chip8::OP_4xxx()
+void Chip8::OP_skipIfNot()
 {
-    if (registers[opcode & 0x0F00] != opcode & 0x00FF){
+    if (registers[(opcode & 0x0F00) >> 8] != (opcode & 0x00FF)){
         programCounter += 2;
     }
 }
-void Chip8::OP_5xx0()
+void Chip8::OP_skipIfEqual()
 {
-    if (registers[opcode & 0x0F00] == registers[opcode & 0x00F0]){
+    if (registers[(opcode & 0x0F00) >> 8] == registers[(opcode & 0x00F0) >> 4]){
         programCounter += 2;
     }
 }
-void Chip8::OP_6xxx()
+void Chip8::OP_setRegister()
 {
-    registers[opcode & 0x0F00] = opcode & 0x00FF;
+    registers[(opcode & 0x0F00) >> 8] = opcode & 0x00FF;
 }
-void Chip8::OP_7xxx()
+void Chip8::OP_addToRegister()
 {
-    registers[opcode & 0x0F00] += opcode & 0x00FF;
+    registers[(opcode & 0x0F00) >> 8] += opcode & 0x00FF;
 }
-void Chip8::OP_8xx0()
+void Chip8::OP_copyRegister()
 {
-    registers[opcode & 0x0F00] = registers[opcode & 0x00F0];
+    registers[(opcode & 0x0F00) >> 8] = registers[(opcode & 0x00F0) >> 4];
 }
-void Chip8::OP_8xx1()
+void Chip8::OP_bitwiseOR()
 {
-    registers[opcode & 0x0F00] |= registers[opcode & 0x00F0];
+    registers[(opcode & 0x0F00) >> 8] |= registers[(opcode & 0x00F0) >> 4];
 }
-void Chip8::OP_8xx2()
+void Chip8::OP_bitwiseAND()
 {
-    std::cout << "8xx2";
+    registers[(opcode & 0x0F00) >> 8] &= registers[(opcode & 0x00F0) >> 4];
 }
-void Chip8::OP_8xx3()
+void Chip8::OP_bitwiseXOR()
 {
-    std::cout << "8xx3";
+    registers[(opcode & 0x0F00) >> 8] ^= registers[(opcode & 0x00F0) >> 4];
 }
-void Chip8::OP_8xx4()
+void Chip8::OP_sumRegister()
 {
-    std::cout << "8xx4";
+    uint16_t sum = registers[(opcode & 0x0F00) >> 8] + registers[(opcode & 0x00F0) >> 4];
+
+    if (sum > 0xFF) registers[15] = 1;
+    else registers[15] = 0;
+
+    registers[(opcode & 0x0F00) >> 8] = sum & 0xFF;
 }
-void Chip8::OP_8xx5()
+void Chip8::OP_subtractRegister()
 {
-    std::cout << "8xx5";
+    if (registers[(opcode & 0x0F00) >> 8] > registers[(opcode & 0x00F0) >> 4]) registers[15] = 1;
+    else registers[15] = 0;
+    registers[(opcode & 0x0F00) >> 8] -= registers[(opcode & 0x00F0) >> 4];
 }
-void Chip8::OP_8xx6()
+void Chip8::OP_halveRegister()
 {
-    std::cout << "8xx6";
+    registers[15] = registers[(opcode & 0x0F00) >> 8] & 0x01;
+    registers[(opcode & 0x0F00) >> 8] /= 2;
 }
-void Chip8::OP_8xx7()
+void Chip8::OP_subtractRegisterInverted()
 {
-    std::cout << "8xx7";
+    if (registers[(opcode & 0x0F00) >> 8] < registers[(opcode & 0x00F0) >> 4]) registers[15] = 1;
+    else registers[15] = 0;
+    registers[(opcode & 0x0F00) >> 8] = registers[(opcode & 0x00F0) >> 4] - registers[(opcode & 0x0F00) >> 8];
 }
-void Chip8::OP_8xxe()
+void Chip8::OP_doubleRegister()
 {
-    std::cout << "8xxe";
+    registers[15] = registers[(opcode & 0x0F00) >> 8] & 0x80;
+    registers[(opcode & 0x0F00) >> 8] *= 2;
 }
-void Chip8::OP_9xx0()
+void Chip8::OP_skipIfRegistersNotEqual()
 {
-    std::cout << "9xx0";
+    if (registers[(opcode & 0x0F00) >> 8] != registers[(opcode & 0x00F0) >> 4]){
+        programCounter += 2;
+    }
 }
-void Chip8::OP_axxx()
+void Chip8::OP_setIndexRegister()
 {
-    std::cout << "axxx";
+    indexRegister = opcode & 0x0FFF;
 }
-void Chip8::OP_bxxx()
+void Chip8::OP_jumpPC()
 {
-    std::cout << "bxxx";
+    programCounter = (opcode & 0x0FFF) + registers[0];
 }
-void Chip8::OP_cxxx()
+void Chip8::OP_randomBitwiseAND()
 {
-    std::cout << "cxxx";
+    registers[(opcode & 0x0F00) >> 8] = randomSeed(randGen) & (opcode & 0x00FF);
 }
-void Chip8::OP_dxxx()
+void Chip8::OP_displaySprite()
 {
-    std::cout << "dxxx";
+    uint16_t n = opcode & 0x000F;
+    uint16_t x0 = registers[(opcode & 0x0F00) >> 8] % SCREEN_WIDTH;
+    uint16_t y0 = registers[(opcode & 0x00F0) >> 4] % SCREEN_HEIGHT;
+    for (int i = 0 ; i < n ; i++){
+        uint16_t start = (y0+i) * SCREEN_WIDTH + x0;
+        uint8_t b = memory[indexRegister + i];
+        for (int j = 0 ; j < 8 ; j++){
+            display[start+j] ^= (b & (0b10000000 >> j)) >> (7 - j);
+        }
+    }
+    Render();
 }
 void Chip8::OP_ex9e()
 {
@@ -139,9 +160,9 @@ void Chip8::OP_fx18()
 {
     std::cout << "fx18";
 }
-void Chip8::OP_fx1e()
+void Chip8::OP_addToIndexRegister()
 {
-    std::cout << "fx1e";
+    indexRegister += registers[(opcode & 0x0F00) >> 8];
 }
 void Chip8::OP_fx29()
 {

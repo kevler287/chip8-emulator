@@ -131,10 +131,14 @@ void Chip8::OP_displaySprite()
         uint16_t start = (y0+i) * SCREEN_WIDTH + x0;
         uint8_t b = memory[indexRegister + i];
         for (int j = 0 ; j < 8 ; j++){
-            display[start+j] ^= (b & (0b10000000 >> j)) >> (7 - j);
+            if (b & (0b10000000 >> j)){
+                display[start+j] ^= 0xFFFFFFFF;
+            }
+            else{
+                display[start+j] ^= 0x0;
+            }
         }
     }
-    Render();
 }
 void Chip8::OP_ex9e()
 {

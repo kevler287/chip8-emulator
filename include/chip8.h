@@ -2,9 +2,7 @@
 #include <map>
 #include <string>
 #include <random>
-
-const unsigned int SCREEN_WIDTH = 64;
-const unsigned int SCREEN_HEIGHT = 32;
+#include <display.h>
 
 class Chip8
 {
@@ -25,7 +23,6 @@ public:
     std::uniform_int_distribution<uint8_t> randomSeed;
 
     Chip8();
-    void Render();
     bool Tick();
     void LoadROM(char const *filename);
 

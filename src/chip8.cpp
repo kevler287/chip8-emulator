@@ -46,18 +46,6 @@ Chip8::Chip8()
     opTable["fx65"] = &Chip8::OP_fx65;
 }
 
-void Chip8::Render(){
-    for (int i = 0 ; i < SCREEN_WIDTH ; i++){
-        std::cout << "_";
-    }
-    std::cout << "\n";
-    for (int i = 0 ; i < std::size(display) ; i++){
-        if (display[i] == 1) std::cout << "#";
-        if (display[i] == 0) std::cout << " ";
-        if (i % SCREEN_WIDTH == SCREEN_WIDTH-1) std::cout << "\n";
-    }
-}
-
 bool Chip8::Tick()
 {
     opcode = (memory[programCounter] << 8u) | memory[programCounter + 1];

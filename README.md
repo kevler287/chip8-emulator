@@ -11,4 +11,6 @@ First steps in c++
 - Console logs: https://www.w3schools.com/cpp/cpp_output.asp
 - OpCodes: http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#3.0
 - opTable: https://stackoverflow.com/questions/73806338/how-to-create-a-map-with-key-of-string-and-value-a-pointer-to-a-member-function
+- SDL Basics: https://lazyfoo.net/tutorials/SDL/
+- SDL Texture Update: https://discourse.libsdl.org/t/question-creating-an-sdl-texture-from-an-array/38530
 

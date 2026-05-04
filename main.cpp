@@ -3,7 +3,7 @@
 
 int main()
 {
-    char const *romFilename = "roms/octojam1title.ch8";
+    char const *romFilename = "roms/flightrunner.ch8";
     Chip8 chip8;
     chip8.LoadROM(romFilename);
     Display display;
@@ -11,24 +11,24 @@ int main()
     if (!success){
         return 1;
     }
-    SDL_Event e;
     bool quit = false;
 
     while(!quit)
     {
-        while( SDL_PollEvent( &e ) != 0 )
-        {
-            if( e.type == SDL_QUIT )
-            {
-                quit = true;
-            }
-        }
-        bool success = chip8.Tick();
-        if (!success)
-        {
-            std::cout << "error: " << std::hex << chip8.opcode << "\n";
-        }
+        quit = chip8.ProcessKeyboardEvent();
+        chip8.Tick();
         display.Render(chip8.display);
+
+        if (chip8.delayTimer > 0)
+        {
+            chip8.delayTimer--;
+        }
+
+        if (chip8.soundTimer > 0)
+        {
+            chip8.soundTimer--;
+        }
+
     }
     return 0;
 }

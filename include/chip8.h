@@ -4,6 +4,29 @@
 #include <random>
 #include <display.h>
 
+const unsigned int FONT_ADDRESS = 0x050;
+const unsigned int START_ADDRESS = 0x200;
+
+const uint8_t FONTSET[80] =
+    {
+        0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+        0x20, 0x60, 0x20, 0x20, 0x70, // 1
+        0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+        0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+        0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+        0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+        0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+        0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+        0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+        0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+        0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+        0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+        0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+        0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+        0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+        0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+};
+
 class Chip8
 {
 public:
@@ -15,6 +38,8 @@ public:
 
     uint8_t memory[4096]{};
     uint32_t display[SCREEN_WIDTH * SCREEN_HEIGHT]{};
+    std::map<const SDL_Keycode, uint8_t> keyBinds;
+    bool keyStates[16]{};
 
     uint16_t opcode{};
     std::map<char const *, void (Chip8::*)()> opTable;
@@ -22,8 +47,12 @@ public:
     std::default_random_engine randGen;
     std::uniform_int_distribution<uint8_t> randomSeed;
 
+    uint8_t delayTimer{};
+    uint8_t soundTimer{};
+
     Chip8();
-    bool Tick();
+    void Tick();
+    bool ProcessKeyboardEvent();
     void LoadROM(char const *filename);
 
 private:
@@ -51,15 +80,15 @@ private:
     void OP_jumpPC();
     void OP_randomBitwiseAND();
     void OP_displaySprite();
-    void OP_ex9e();
-    void OP_exa1();
-    void OP_fx07();
-    void OP_fx0a();
-    void OP_fx15();
-    void OP_fx18();
+    void OP_skipIfKeyPressed();
+    void OP_skipIfKeyIsNotPressed();
+    void OP_setRegisterToDelayTimer();
+    void OP_waitForKeyPress();
+    void OP_setDelayTimer();
+    void OP_setSoundTimer();
     void OP_addToIndexRegister();
-    void OP_fx29();
-    void OP_fx33();
-    void OP_fx55();
+    void OP_setIndexRegisterToFontAddress();
+    void OP_writeDigitsToMemory();
+    void OP_writeRegistersToMemory();
     void OP_fx65();
 };

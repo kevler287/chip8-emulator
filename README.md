@@ -13,4 +13,5 @@ First steps in c++
 - opTable: https://stackoverflow.com/questions/73806338/how-to-create-a-map-with-key-of-string-and-value-a-pointer-to-a-member-function
 - SDL Basics: https://lazyfoo.net/tutorials/SDL/
 - SDL Texture Update: https://discourse.libsdl.org/t/question-creating-an-sdl-texture-from-an-array/38530
+- Keybinds: https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Flepuri.net%2Fmaking-a-chip-8-emulator-in-c%2F&ved=0CBYQjRxqFwoTCJiVrMmln5QDFQAAAAAdAAAAABAG&opi=89978449
 

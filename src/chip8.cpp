@@ -2,8 +2,6 @@
 #include "chip8.h"
 #include <iostream>
 
-const unsigned int START_ADDRESS = 0x200;
-
 Chip8::Chip8()
 {
     programCounter = START_ADDRESS;
@@ -33,20 +31,42 @@ Chip8::Chip8()
     opTable["bxxx"] = &Chip8::OP_jumpPC;
     opTable["cxxx"] = &Chip8::OP_randomBitwiseAND;
     opTable["dxxx"] = &Chip8::OP_displaySprite;
-    opTable["ex9e"] = &Chip8::OP_ex9e;
-    opTable["exa1"] = &Chip8::OP_exa1;
-    opTable["fx07"] = &Chip8::OP_fx07;
-    opTable["fx0a"] = &Chip8::OP_fx0a;
-    opTable["fx15"] = &Chip8::OP_fx15;
-    opTable["fx18"] = &Chip8::OP_fx18;
+    opTable["ex9e"] = &Chip8::OP_skipIfKeyPressed;
+    opTable["exa1"] = &Chip8::OP_skipIfKeyIsNotPressed;
+    opTable["fx07"] = &Chip8::OP_setRegisterToDelayTimer;
+    opTable["fx0a"] = &Chip8::OP_waitForKeyPress;
+    opTable["fx15"] = &Chip8::OP_setDelayTimer;
+    opTable["fx18"] = &Chip8::OP_setSoundTimer;
     opTable["fx1e"] = &Chip8::OP_addToIndexRegister;
-    opTable["fx29"] = &Chip8::OP_fx29;
-    opTable["fx33"] = &Chip8::OP_fx33;
-    opTable["fx55"] = &Chip8::OP_fx55;
+    opTable["fx29"] = &Chip8::OP_setIndexRegisterToFontAddress;
+    opTable["fx33"] = &Chip8::OP_writeDigitsToMemory;
+    opTable["fx55"] = &Chip8::OP_writeRegistersToMemory;
     opTable["fx65"] = &Chip8::OP_fx65;
+
+    keyBinds[SDLK_x] = 0x0;
+    keyBinds[SDLK_1] = 0x1;
+    keyBinds[SDLK_2] = 0x2;
+    keyBinds[SDLK_3] = 0x3;
+    keyBinds[SDLK_q] = 0x4;
+    keyBinds[SDLK_w] = 0x5;
+    keyBinds[SDLK_e] = 0x6;
+    keyBinds[SDLK_a] = 0x7;
+    keyBinds[SDLK_s] = 0x8;
+    keyBinds[SDLK_d] = 0x9;
+    keyBinds[SDLK_z] = 0xa;
+    keyBinds[SDLK_c] = 0xb;
+    keyBinds[SDLK_4] = 0xc;
+    keyBinds[SDLK_r] = 0xd;
+    keyBinds[SDLK_f] = 0xe;
+    keyBinds[SDLK_v] = 0xf;
+
+    for (int i = 0; i < std::size(FONTSET); i++)
+    {
+        memory[FONT_ADDRESS + i] = FONTSET[i];
+    }
 }
 
-bool Chip8::Tick()
+void Chip8::Tick()
 {
     opcode = (memory[programCounter] << 8u) | memory[programCounter + 1];
     programCounter += 2;
@@ -84,10 +104,31 @@ bool Chip8::Tick()
         if (match)
         {
             (this->*oc.second)();
-            return true;
+            return;
         }
     }
-    return false;
+    std::cout << "error: " << std::hex << opcode << " doesn't exist\n";
+}
+
+bool Chip8::ProcessKeyboardEvent()
+{
+    bool quit = false;
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+    {
+        if( event.type == SDL_QUIT ) quit = true;
+        if (keyBinds.count(event.key.keysym.sym) == 0)
+        {
+            std::cout << "Key not handled: " << event.key.keysym.sym << "\n";
+            continue;
+        }
+        uint8_t keyIdx = keyBinds[event.key.keysym.sym];
+        if (event.type == SDL_KEYDOWN)
+            keyStates[keyIdx] = true;
+        if (event.type == SDL_KEYUP)
+            keyStates[keyIdx] = false;
+    }
+    return quit;
 }
 
 void Chip8::LoadROM(char const *filename)

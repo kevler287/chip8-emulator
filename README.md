@@ -9,7 +9,7 @@ First steps in c++
 - install g++ compiler and SDL2
 - get a rom from: https://github.com/kripod/chip8-roms
 - 'g++ -o main.exe -I include/ src/*.cpp main.cpp -lSDL2main -lSDL2'
-- './main.exe 60 ${path/to/rom}'
+- './main.exe 60 ${path/to/rom}' ('60' means 60Hz, adjust for faster or slower execution speed)
 
 ## Sources
 - Basic Understanding: https://austinmorlan.com/posts/chip8_emulator/

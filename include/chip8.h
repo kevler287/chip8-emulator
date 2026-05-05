@@ -90,5 +90,5 @@ private:
     void OP_setIndexRegisterToFontAddress();
     void OP_writeDigitsToMemory();
     void OP_writeRegistersToMemory();
-    void OP_fx65();
+    void OP_writeMemoryToRegisters();
 };

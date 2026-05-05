@@ -41,7 +41,7 @@ Chip8::Chip8()
     opTable["fx29"] = &Chip8::OP_setIndexRegisterToFontAddress;
     opTable["fx33"] = &Chip8::OP_writeDigitsToMemory;
     opTable["fx55"] = &Chip8::OP_writeRegistersToMemory;
-    opTable["fx65"] = &Chip8::OP_fx65;
+    opTable["fx65"] = &Chip8::OP_writeMemoryToRegisters;
 
     keyBinds[SDLK_x] = 0x0;
     keyBinds[SDLK_1] = 0x1;
@@ -116,9 +116,11 @@ bool Chip8::ProcessKeyboardEvent()
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
-        if( event.type == SDL_QUIT ) quit = true;
+        if (event.type == SDL_QUIT)
+            quit = true;
 
-        if (keyBinds.count(event.key.keysym.sym) == 0)continue;
+        if (keyBinds.count(event.key.keysym.sym) == 0)
+            continue;
         uint8_t keyIdx = keyBinds[event.key.keysym.sym];
         if (event.type == SDL_KEYDOWN)
             keyStates[keyIdx] = true;

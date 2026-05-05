@@ -227,7 +227,7 @@ void Chip8::OP_writeRegistersToMemory()
         memory[indexRegister + i] = registers[i];
     }
 }
-void Chip8::OP_fx65()
+void Chip8::OP_writeMemoryToRegisters()
 {
     for (int i = 0; i < std::size(registers); i++)
     {

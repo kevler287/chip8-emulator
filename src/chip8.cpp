@@ -117,11 +117,8 @@ bool Chip8::ProcessKeyboardEvent()
     while (SDL_PollEvent(&event))
     {
         if( event.type == SDL_QUIT ) quit = true;
-        if (keyBinds.count(event.key.keysym.sym) == 0)
-        {
-            std::cout << "Key not handled: " << event.key.keysym.sym << "\n";
-            continue;
-        }
+
+        if (keyBinds.count(event.key.keysym.sym) == 0)continue;
         uint8_t keyIdx = keyBinds[event.key.keysym.sym];
         if (event.type == SDL_KEYDOWN)
             keyStates[keyIdx] = true;
